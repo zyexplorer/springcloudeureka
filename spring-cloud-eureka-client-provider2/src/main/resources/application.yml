@@ -1,0 +1,9 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/  #注册中心地址
+server:
+  port: 8763  #发布服务的端口号
+spring:
+  application:
+    name: service-provider2  #在注册中心发布服务的服务名称，应用根据该服务名称进行调用

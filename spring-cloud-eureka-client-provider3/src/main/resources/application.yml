@@ -1,0 +1,23 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/  #注册中心地址
+server:
+  port: 8764  #发布服务的端口号
+  context-path:  /provider-client
+
+spring:
+  application:
+    name: service-provider3  #在注册中心注册的服务名称，应用根据此服务名称进行调用服务
+
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/springboot
+    username: root
+    password: 123
+    
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    generate-ddl: true

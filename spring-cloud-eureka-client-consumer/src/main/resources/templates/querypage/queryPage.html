@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.springframework.org/schema/mvc">
+<head>
+    <meta charset="UTF-8"/>
+    <title>接口测试页面</title>
+
+    <script type="text/javascript" th:src="@{js\jquery-1.9.1.js}"></script>
+    <script>
+        $(function () {
+            $("#qry_mobile").click(function () {
+                var obj = new Object();
+                obj.mobile = $("#mobile").val();
+                if($.trim(obj.mobile) == ''){
+                    $("#m_result").html('<font color="red">请输入手机号再测试</font>');
+                    return ;
+                }
+                $.ajax({
+                    url : "checkMobileAjax",
+                    type : "POST",
+                    async : true,
+                    data : obj,
+                    dataType : "json",
+                    success : function (data) {
+                        console.log(data);
+                        $("#m_result").html(data.result + "," + data.msg);
+                    },
+                    error : function (err) {
+                        console.log(err);
+                        $("#m_result").html(err.result + "," + err.msg);
+                    }
+                });
+            });
+
+
+            $("#qry_name").click(function () {
+                var obj = new Object();
+                obj.name = $("#name").val();
+                if($.trim(obj.name) == ''){
+                    $("#n_result").html('<font color="red">请输入名字再测试</font>');
+                    return ;
+                }
+                $.ajax({
+                    url : "checkNameAjax",
+                    type : "POST",
+                    async : true,
+                    data : obj,
+                    dataType : "json",
+                    success : function (data) {
+                        console.log(data);
+                        $("#n_result").html(data.result + "," + data.msg);
+                    },
+                    error : function (err) {
+                        console.log(err);
+                        $("#n_result").html(err.result + "," + err.msg);
+                    }
+                });
+            });
+        });
+    </script>
+
+</head>
+<body>
+    测试手机号可用性：
+    <input type="text" id="mobile" name="mobile"/> <input type="button" id="qry_mobile" value="查询"/>
+    <br/>
+    测试结果：<label id="m_result"></label>
+
+    <br/><br/><br/><br/>
+
+    测试姓名可用性：
+    <input type="text" id="name" name="name"/> <input type="button" id="qry_name" value="查询"/>
+    <br/>
+    测试结果：<label id="n_result"></label>
+
+    <br/><br/>
+
+</body>
+</html>

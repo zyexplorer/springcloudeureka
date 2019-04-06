@@ -1,0 +1,50 @@
+类比阿里巴巴的dubbo体系：（服务的注册与发现）
+1.先创建一个springboot模块作为server注册中心 （创建时选择框架支持 Cloud Discovery ——> Eureka Server）
+    只需要在该工程的启动类上加注解 @EnableEurekaServer , 再在应用的配置文件 application.yml 中配置如下：
+        eureka:
+          instance:
+            hostname: localhost
+        #  server:
+        #    enable-self-preservation: false
+        #    eviction-interval-timer-in-ms: 100000
+          client:
+            registerWithEureka: false
+            fetchRegistry: false
+            serviceUrl:
+              defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    那么该应用就可以作为一个注册中心使用了
+
+2.再创建一个springboot模块作为client端的服务生产者  （创建时选择框架支持 Cloud Discovery ——> Eureka Server）
+    只需要在该工程的启动类上加上注解 @EnableEurekaServer , 再在应用的配置文件 application.yml 中配置如下：
+        eureka:
+          client:
+            serviceUrl:
+              defaultZone: http://localhost:8761/eureka/  #注册中心地址 选择上面创建的server为注册中心
+        server:
+          port: 8766  #发布服务的端口号
+          context-path:  /provider-client  #发布服务的上下文路径
+        spring:
+          application:
+            name: service-provider  #在注册中心注册的服务名称，应用根据此服务名称进行调用服务
+    然后在该工程中创建包和需要注册的服务类，如UserService类，在该类上用注解 @EnableEurekaClient 即可将该类中的方法发布为类似webservice服务
+    用注解 @Service（或者@Controller）可以让该类被spring容器初始化，从而将方法映射缓存起来供访问和外部应用调用
+
+3.再创建一个springboot模块作为client端的服务消费者  （创建时选择框架支持 Cloud Discovery ——> Eureka Discovery）
+    只需要在该工程的启动类上加注解 @EnableDiscoveryClient 以及 注入一个 RestTemplate 实例（用@Bean @LoadBalanced注解）
+    再在应用的配置文件 application.yml 中配置如下：
+        eureka:
+          server:
+            enable-self-preservation: false
+          client:
+            serviceUrl:
+              defaultZone: http://localhost:8761/eureka/
+        server:
+          port: 8764
+          context-path: /consumer
+        spring:
+          application:
+            name: service-consumer
+    接着建包写调用生产者发布的服务类，如ConsumeService类，类中注入启动类中已经初始化的RestTemplate实例,方法中均用该实例来调用远程服务
+    格式为： restTemplate.getForObject("url",url返回值类型.class);
+            第一个参数：url即为生产者发布应用的方法映射路径
+            第二个参数：*.class即为该映射对应方法的返回值类型的字节码对象

@@ -1,0 +1,12 @@
+eureka:
+  server:
+    enable-self-preservation: false
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8080
+  context-path: /consumer
+spring:
+  application:
+    name: service-consumer
